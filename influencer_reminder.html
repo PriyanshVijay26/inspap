@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Monthly Proposal Summary</title>
+</head>
+<body>
+  <h1>Hello {{ username }}!</h1>
+  <p>Here's a summary of your proposals:</p>
+  <ul>
+    {% for proposal in proposals %}
+      <li>
+        <b>{{ proposal.campaign.title }}</b> - {{ proposal.status }}
+        <br>
+        Bid Amount: ${{ proposal.bid_amount }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p>Keep up the great work!</p>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Monthly Campaign Summary</title>
+</head>
+<body>
+  <h1>Hello {{ brand_name }}!</h1>
+  <p>Here's a summary of your campaigns:</p>
+  <ul>
+    {% for campaign in campaigns %}
+      <li>
+        <b>{{ campaign.title }}</b> - {{ campaign.status }}
+        <br>
+        Budget: ${{ campaign.budget }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p>Check your dashboard for more details!</p> 
+</body>
+</html>
