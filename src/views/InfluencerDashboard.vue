@@ -3,6 +3,10 @@
   <div class="influencer-dashboard">
     <h1>Welcome, {{ influencer.username }}!</h1>
 
+    <div class="influencer-profile">
+      <!-- Adding localhost:5000 as the base URL -->
+      <img :src="'http://localhost:5000/' + influencer.profile_image" alt="Influencer Profile Picture" class="profile-image" />
+    </div>
     <h2>User Details</h2>
     <div class="user-details">
       <p><strong>Name:</strong> {{ influencer.username }}</p>
@@ -336,7 +340,14 @@ h2 {
 .close:hover {
   color: #0066cc;
 }
-
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 10px auto;
+  display: block;
+}
 /* Form Styling */
 .form-group {
   margin-bottom: 20px;

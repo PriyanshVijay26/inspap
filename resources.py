@@ -1167,14 +1167,14 @@ class ActivateUser(Resource):
 
 
 class CampaignResourcePrivate(Resource):
-   #@roles_required('admin')
+    # @roles_required('admin')
     def put(self, campaign_id):
         campaign = Campaign.query.get_or_404(campaign_id)
         data = request.get_json()
         campaign.private = data.get('private', campaign.private)  # Update 'private' if provided, otherwise keep the same
         db.session.commit()
-        return jsonify({'message': 'Campaign updated successfully'}), 200
-
+        response = make_response(jsonify({'message': 'Campaign updated successfully'}), 200)
+        return response
 
 
 class CsvCreate(Resource):

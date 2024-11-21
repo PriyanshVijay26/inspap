@@ -82,7 +82,8 @@ export default {
 
 .login-box {
   background-color: rgba(255, 255, 255, 0.8);
-  padding: 30px;
+  padding: 50px; /* Increased padding for more space inside the box */
+  width: 400px; /* Added a specific width to make the box wider */
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;

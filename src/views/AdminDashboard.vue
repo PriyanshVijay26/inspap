@@ -146,19 +146,7 @@ export default {
     };
   },
   async mounted() {
-    try {
-      const brandResponse = await axios.get('http://localhost:5000/api/admin/brand_professionals');
-      this.brandProfessionals = brandResponse.data;
-
-      const influencerResponse = await axios.get('http://localhost:5000/api/admin/influencer_professionals');
-      this.influencerProfessionals = influencerResponse.data;
-
-      const campaignsResponse = await axios.get('http://localhost:5000/api/admin/campaigns');
-      this.campaigns = campaignsResponse.data;
-      this.createUserChart();
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    await this.loadData(); // Call the data loading method in mounted
   },
   computed: {
     filteredBrandProfessionals() {
@@ -184,10 +172,28 @@ export default {
     }
   },
   methods: {
+    async loadData() {
+      try {
+        const [brandResponse, influencerResponse, campaignsResponse] = await Promise.all([
+          axios.get('http://localhost:5000/api/admin/brand_professionals'),
+          axios.get('http://localhost:5000/api/admin/influencer_professionals'),
+          axios.get('http://localhost:5000/api/admin/campaigns')
+        ]);
+
+        this.brandProfessionals = brandResponse.data;
+        this.influencerProfessionals = influencerResponse.data;
+        this.campaigns = campaignsResponse.data;
+
+        this.createUserChart(); // Recreate the chart after reloading data
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    },
     async verifyBrand(brandId) {
       try {
         await axios.post(`http://localhost:5000/api/admin/verify_brand/${brandId}`);
         const brand = this.brandProfessionals.find(b => b.id === brandId);
+        await this.loadData();
         if (brand) {
           brand.verified = true;
         }
@@ -199,6 +205,7 @@ export default {
       try {
         await axios.post(`http://localhost:5000/api/admin/activate_user/${userId}`);
         this.updateUserActiveStatus(userId, true);
+        await this.loadData();
       } catch (error) {
         console.error('Error activating user:', error);
       }
@@ -207,6 +214,7 @@ export default {
       try {
         await axios.post(`http://localhost:5000/api/admin/deactivate_user/${userId}`);
         this.updateUserActiveStatus(userId, false);
+        await this.loadData();
       } catch (error) {
         console.error('Error deactivating user:', error);
       }
@@ -226,6 +234,7 @@ export default {
         const newVisibility = !campaign.private;
         await axios.put(`http://localhost:5000/api/admin/campaigns/${campaign.id}`, { private: newVisibility });
         campaign.private = newVisibility;
+        await this.loadData();
       } catch (error) {
         console.error('Error toggling campaign visibility:', error);
       }
