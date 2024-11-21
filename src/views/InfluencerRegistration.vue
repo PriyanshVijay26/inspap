@@ -51,8 +51,14 @@
         </div>
         <div class="form-group">
           <label for="date_of_birth"><i class="fas fa-calendar-alt"></i> Date of Birth:</label>
-          <input type="date" id="date_of_birth" v-model="date_of_birth">
+          <input 
+            type="date" 
+            id="date_of_birth" 
+            v-model="date_of_birth" 
+            :max="maxDate" 
+            required>
         </div>
+
         <div class="form-group">
           <label for="profile_image"><i class="fas fa-image"></i> Profile Image:</label>
           <input type="file" id="profile_image" @change="onFileSelected">
@@ -87,15 +93,27 @@ export default {
     };
   },
   async mounted() {
-    try {
-      const response = await axios.get('http://localhost:5000/api/niches'); // Fetch niches from your API
-      this.niches = response.data;
-    } catch (error) {
-      console.error('Error fetching niches:', error);
-      // Handle the error, e.g., show an error message to the user
-    }
+    this.setMaxDate(); // Set the maxDate when the component mounts
+    this.fetchNiches();
+  
   },
   methods: {
+    setMaxDate() {
+      const today = new Date();
+      today.setFullYear(today.getFullYear() - 5); // Subtract 5 years from today
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Ensure 2 digits for month
+      const day = String(today.getDate()).padStart(2, '0'); // Ensure 2 digits for day
+      this.maxDate = `${year}-${month}-${day}`; // Format as YYYY-MM-DD
+    },
+    async fetchNiches() {
+      try {
+        const response = await axios.get('http://localhost:5000/api/niches');
+        this.niches = response.data;
+      } catch (error) {
+        console.error('Error fetching niches:', error);
+      }
+    },
     onFileSelected(event) {
       this.profile_image = event.target.files[0];
     },

@@ -17,6 +17,12 @@
       <li v-for="campaign in campaigns" :key="campaign.id">
         <h3>{{ campaign.title }}</h3>
         <p>{{ campaign.description }}</p>
+        <p>
+          <strong>Status: </strong>
+          <span :class="campaign.private ? 'private-label' : 'public-label'">
+            {{ campaign.private ? 'Private' : 'Public' }}
+          </span>
+        </p>
         <button @click="editCampaign(campaign.id)">Edit</button>
         <button @click="deleteCampaign(campaign.id)">Delete</button>
         <router-link :to="`/campaign/${campaign.id}/proposals`"> 
@@ -352,4 +358,14 @@ button[title="Create New Campaign"]:hover {
   padding: 8px 0;
   color: #00796b;
 }
+.public-label {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.private-label {
+  color: #d32f2f;
+  font-weight: bold;
+}
 </style>
+

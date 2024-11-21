@@ -183,23 +183,33 @@ class InfluencerLogin(Resource):
         email = data.get('email')
         password = data.get('password')
 
-        user = datastore.find_user(email=email)  
+        # Find the user by email
+        user = datastore.find_user(email=email)
+        
+        # Check if user exists and if password is correct
         if not user or not verify_password(password, user.password):
             return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
+        # Check if user is an influencer
         if user.type != 'influencer':
             return make_response(jsonify({'message': 'User is not an influencer'}), 403)
+        
+        # Check if the user's account is active
+        if not user.active:
+            return make_response(jsonify({'message': 'Your account is blocked. Please contact support.'}), 403)
 
-        # Get the user's auth token and roles
+        # Generate and store the auth token
         auth_token = user.get_auth_token()
         user.auth_token = auth_token
         db.session.commit()
+
+        # Get the user's roles
         roles = [role.name for role in user.roles]
 
         return make_response(jsonify({'auth_token': auth_token, 'role': roles}), 200)
-    
-    
 
+    
+    
 
 class BrandLogin(Resource):
     def post(self):
@@ -209,30 +219,47 @@ class BrandLogin(Resource):
 
         print(f"Received login request for email: {email}")  # Print the received email
 
+        # Find the user by email
         user = datastore.find_user(email=email) 
 
         if not user:
             print(f"User with email {email} not found.")
             return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
+        # Verify the user's password
         if not verify_password(password, user.password):
             print(f"Incorrect password for email {email}.")
             return make_response(jsonify({'message': 'Invalid credentials'}), 401)
 
+        # Check if user is a brand
         if user.type != 'brand':
             print(f"User {email} is not a brand.")
             return make_response(jsonify({'message': 'User is not a brand'}), 403)
 
-        # Get the user's auth token and roles
+        # Check if the user's account is active
+        if not user.active:
+            return make_response(jsonify({'message': 'Your account is blocked. Please contact support.'}), 403)
+
+        # Check if the brand is verified
+        brand = user.brand  # Assuming a one-to-one relationship between user and brand
+        if not brand or not brand.verified:
+            return make_response(jsonify({'message': 'Your brand is not verified. Please verify your account.'}), 403)
+
+        # Generate the auth token for successful login
         auth_token = user.get_auth_token()
         user.auth_token = auth_token
         db.session.commit()
-        login_user(user) 
+
+        # Log the user in
+        login_user(user)
+
+        # Get the user's roles
         roles = [role.name for role in user.roles]
 
         print(current_user)  # Print current_user after successful login
 
         return make_response(jsonify({'auth_token': auth_token, 'roles': roles}), 200)
+
 
 class AdminLogin(Resource):
     def post(self):
@@ -281,6 +308,7 @@ class CreateCampaign(Resource):
                 'status': campaign.status,
                 'campaign_goals': campaign.campaign_goals,
                 'target_audience': campaign.target_audience,
+                'private': campaign.private,
                 # ... add other fields as needed
             }
             campaign_list.append(campaign_data)
@@ -468,6 +496,7 @@ class InfluencerCampaignResource(Resource):
                 'status': campaign.status,
                 'campaign_goals': campaign.campaign_goals,
                 'target_audience': campaign.target_audience,
+                'private': campaign.private,
                 # ... other fields you want to include
             }
             result.append(campaign_data)
@@ -982,7 +1011,7 @@ class InfluencerProfessionalsAPI(Resource):
 
 
 class CampaignsAPI(Resource):
-    @cache.cached(timeout=50)
+    #@cache.cached(timeout=50)
     def get(self):
         """Get all campaigns with details."""
         try:

@@ -124,7 +124,7 @@ export default {
           }
         });
         const data = await response.json();
-        this.campaigns = data;
+        this.campaigns = data.filter(campaign => !campaign.private);
         console.log(this.campaigns)
       } catch (error) {
         console.error('Error fetching campaigns:', error);
