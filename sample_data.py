@@ -7,7 +7,6 @@ import secrets
 
 # Import models
 from models import User, Role, Influencer, Brand, Campaign, Proposal, ChatMessage,Niche, db
-
 def initialize_sample_data():
     from main import app  # Import your Flask app instance
     with app.app_context():
@@ -81,7 +80,8 @@ def initialize_sample_data():
                 date_of_birth=datetime(1990, 5, 15),
                 facebook_link='https://facebook.com/influencer1',
                 instagram_link='https://instagram.com/influencer1',
-                twitter_link='https://twitter.com/influencer1'
+                twitter_link='https://twitter.com/influencer1',
+                profile_image='uploads/influencer1.jpeg'
             )
             db.session.add(influencer1)
 
@@ -94,7 +94,8 @@ def initialize_sample_data():
                 website='https://www.brand1.com',
                 contact_email='contact@brand1.com',
                 company_description='Sample description for Brand 1',
-                industry='Technology'
+                industry='Technology',
+                profile_image='uploads/brand1.jpeg'
             )
             db.session.add(brand1)
 
@@ -148,11 +149,11 @@ def initialize_sample_data():
             db.session.add(chat_message2)
 
         niches = [
-            "Technology", 
-            "Beauty", 
-            "Gaming", 
-            "Travel", 
-            "Food", 
+            "Technology",
+            "Beauty",
+            "Gaming",
+            "Travel",
+            "Food",
             "Fitness"
         ]
 
@@ -161,6 +162,7 @@ def initialize_sample_data():
             if not existing_niche:
                 new_niche = Niche(name=niche_name)
                 db.session.add(new_niche)
+
         # Commit the session to save all changes
         db.session.commit()
         print("Sample data added successfully.")
