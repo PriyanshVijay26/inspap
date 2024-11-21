@@ -9,11 +9,13 @@
         <div
           v-for="message in messages"
           :key="message.id"
-          :class="{ 'my-message': message.sender_id === currentUserId }"
+          :class="['message', message.sender_id === currentUserId ? 'my-message' : 'received-message']"
         >
-          {{ message.content }}
-          <small v-if="isValidDate(message.timestamp)">
-            {{ new Date(message.timestamp).toLocaleTimeString() }}
+          <div class="message-content">
+            {{ message.content }}
+          </div>
+          <small v-if="isValidDate(message.timestamp)" class="message-timestamp">
+            {{ convertToIST(message.timestamp) }}
           </small>
         </div>
       </div>
@@ -118,6 +120,22 @@ export default {
       const date = new Date(dateString);
       return !isNaN(date.getTime());
     },
+    convertToIST(dateString) {
+      const utcDate = new Date(dateString);
+      if (isNaN(utcDate.getTime())) return ''; // Return empty if the date is invalid
+
+      // Convert UTC date to IST (UTC+5:30)
+      const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+      const istDate = new Date(utcDate.getTime() + istOffset);
+
+      // Format IST date as a readable string
+      return istDate.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata', // Ensures IST timezone
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    },
   },
 };
 </script>
@@ -140,7 +158,7 @@ export default {
   background: white;
   border-radius: 8px;
   width: 90%;
-  max-width: 400px;
+  max-width: 600px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -156,21 +174,48 @@ export default {
   border-bottom: 1px solid #ccc;
 }
 
+.chat-header h3 {
+  margin: 0; /* Remove default h3 margin */
+}
+
 .chat-messages {
   flex-grow: 1;
-  height: 300px;
   overflow-y: auto;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  margin-bottom: 10px;
 }
 
 .my-message {
-  text-align: right;
+  align-self: flex-end;
+  max-width: 45%;
 }
 
-.my-message .chat-message {
-  background-color: #dcf8c6;
-  padding: 5px 10px;
+.received-message {
+  align-self: flex-start;
+  max-width: 45%;
+}
+
+.message-content {
+  background-color: #cec6f8; /* Light purple for your messages */
+  padding: 8px 12px;
   border-radius: 8px;
+  word-wrap: break-word;
+}
+
+.received-message .message-content {
+  background-color: #eee; /* Light gray for received messages */
+}
+
+.message-timestamp {
+  display: block;
+  font-size: smaller;
+  color: #777;
+  margin-top: 2px;
 }
 
 .chat-input {

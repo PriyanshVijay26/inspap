@@ -6,15 +6,7 @@
       <p><strong>Campaign Title:</strong> {{ campaignTitle }}</p>
     </div>
 
-    <h3>Proposed By You</h3> 
-    <ul v-if="myProposals.length > 0" class="proposal-list">
-      <li v-for="proposal in myProposals" :key="proposal.id" class="proposal-card">
-        <p><strong>{{ proposal.influencer_name }}</strong></p>
-        <p>Bid Amount: ${{ proposal.bid_amount }}</p>
-        <p>Status: <span :class="`status-${proposal.status}`">{{ proposal.status }}</span></p>
-      </li>
-    </ul>
-    <p v-else class="no-proposals">You have not proposed to this campaign yet.</p>
+  
 
     <h3>Proposed By Influencers</h3>
     <ul v-if="otherProposals.length > 0" class="proposal-list">
@@ -256,8 +248,30 @@ button {
 }
 
 .chat-wrapper {
-  all: unset; /* Reset styles */
-  
+  /* Styles to override interference from parent component */
+  all: unset; /* This resets all styles */ 
+
+  /* Now add the specific styles you need for the chat component */
+  background-color: white; 
+  border: 1px solid #ccc; 
+  border-radius: 5px;
+  width: 100%; /* Or a specific width */
+  max-width: 400px; 
+  /* ... add more styles as needed ... */
+}
+
+.chat-wrapper .chat-messages {
+  /* Target the nested .chat-messages */
+  height: 200px; /* Or another height as needed */
+  display: flex;
+  flex-direction: column; 
+}
+.chat-wrapper .my-message {
+  align-self: flex-end; /* Align your messages to the right */
+}
+
+.chat-wrapper .received-message {
+  align-self: flex-start; /* Align received messages to the left */
 }
 
 </style>

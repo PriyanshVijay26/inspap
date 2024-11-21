@@ -15,12 +15,12 @@
 
       <div class="form-group">
         <label for="start_date" class="form-label">Start Date:</label>
-        <input type="date" id="start_date" v-model="campaignData.start_date" required class="form-input">
+        <input type="date" id="start_date" v-model="campaignData.start_date" required class="form-input" :min="today">
       </div>
 
       <div class="form-group">
         <label for="end_date" class="form-label">End Date:</label>
-        <input type="date" id="end_date" v-model="campaignData.end_date" required class="form-input">
+        <input type="date" id="end_date" v-model="campaignData.end_date" required class="form-input" :min="minEndDate">
       </div>
 
       <div class="form-group">
@@ -62,6 +62,31 @@ export default {
       token: null, 
       role: localStorage.getItem('role'),
     };
+  },
+  computed: {
+    today() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = ('0' + (today.getMonth() + 1)).slice(-2);
+      const day = ('0' + today.getDate()).slice(-2);
+      return `${year}-${month}-${day}`; 
+
+    },
+    startDate() { 
+      return this.campaignData.start_date;
+    },
+    minEndDate() {
+      if (!this.campaignData.start_date) return this.today; // Fallback if start date not selected
+
+      const startDate = new Date(this.campaignData.start_date);
+      const minEndDate = new Date(startDate);
+      minEndDate.setDate(startDate.getDate() + 7); // Add 7 days
+
+      const year = minEndDate.getFullYear();
+      const month = ('0' + (minEndDate.getMonth() + 1)).slice(-2);
+      const day = ('0' + minEndDate.getDate()).slice(-2);
+      return `${year}-${month}-${day}`;
+    }
   },
   mounted() {
     this.token = localStorage.getItem('auth_token'); 

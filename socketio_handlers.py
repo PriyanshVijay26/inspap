@@ -1,4 +1,4 @@
-from main import socketio, auth_required, current_user  # Import necessary objects
+'''from main import socketio, auth_required, current_user  # Import necessary objects
 from models import Proposal  # Im
 from flask_socketio import emit, join_room, leave_room
 
@@ -69,7 +69,7 @@ def on_leave(data):
 
 
 
-    '''
+
 
     #@auth_required('token')
     #@auth_required('token')
@@ -132,4 +132,4 @@ def on_leave(data):
         return response
     
 
-'''
+''''''
