@@ -17,6 +17,8 @@ import time
 from tasks import *
 from celery.result import AsyncResult
 from werkzeug.utils import safe_join
+from cache import cache
+
 
 api = Api() 
 
@@ -980,6 +982,7 @@ class InfluencerProfessionalsAPI(Resource):
 
 
 class CampaignsAPI(Resource):
+    @cache.cached(timeout=50)
     def get(self):
         """Get all campaigns with details."""
         try:

@@ -24,6 +24,10 @@ from httplib2 import Http
 
 
 
+import csv
+from datetime import datetime
+import os
+
 @shared_task(ignore_result=False)
 def create_resource_csv():
     """
@@ -32,50 +36,44 @@ def create_resource_csv():
     try:
         campaigns = Campaign.query.all()
 
-        # Prepare data for CSV
+        # Prepare data for CSV using dictionaries
         campaign_data = []
         for campaign in campaigns:
             campaign_data.append({
+                'ID': campaign.id,
                 'Title': campaign.title,
-                'Brand': campaign.brand.name,
-                'Description': campaign.description,
-                'Start Date': campaign.start_date.strftime('%Y-%m-%d') if campaign.start_date else None,
-                'End Date': campaign.end_date.strftime('%Y-%m-%d') if campaign.end_date else None,
-                'Budget': campaign.budget,
-                'Status': campaign.status,
-                'Goals': campaign.campaign_goals,
-                'Target Audience': campaign.target_audience,
-                'Private': campaign.private
+                'Brand': campaign.brand.name if campaign.brand else "N/A",
+                'Description': campaign.description if campaign.description else "N/A",
+                'Start Date': campaign.start_date.strftime('%Y-%m-%d') if campaign.start_date else "N/A",
+                'End Date': campaign.end_date.strftime('%Y-%m-%d') if campaign.end_date else "N/A",
+                'Budget': f"${campaign.budget:,.2f}" if campaign.budget else "N/A",
+                'Status': campaign.status if campaign.status else "N/A",
+                'Goals': campaign.campaign_goals if campaign.campaign_goals else "N/A",
+                'Target Audience': campaign.target_audience if campaign.target_audience else "N/A",
+                'Private': "Yes" if campaign.private else "No",
             })
 
-        # Generate CSV
-        csv_output = excel.make_response_from_query_sets(
-            campaign_data,
-            ['Title', 'Brand', 'Description', 'Start Date', 'End Date', 'Budget', 'Status', 'Goals', 'Target Audience', 'Private'],
-            'csv'
-        )
-
-        # Create a unique filename using timestamp to avoid overwriting
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f'Campaigns_{timestamp}.csv'
-
         # Create a directory to store CSV files if it doesn't exist
-        csv_files_dir = 'csv_files'  # You can change this to your desired directory name
+        csv_files_dir = 'csv_files'
         os.makedirs(csv_files_dir, exist_ok=True)
 
-        # Construct the full file path
+        # Generate a unique filename
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f'Campaigns_{timestamp}.csv'
         filepath = os.path.join(csv_files_dir, filename)
 
-        with open(filepath, 'wb') as f:
-            f.write(csv_output.data)
+        # Write data to CSV
+        with open(filepath, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=campaign_data[0].keys())
+            writer.writeheader()
+            writer.writerows(campaign_data)
 
-        return filename  # Return the filename so it can be accessed later
+        return filename  # Return the generated filename
 
     except Exception as e:
-        # Log the error or raise it again if needed
+        # Log the error
         print(f"Error creating CSV: {e}")  # Replace with proper logging
-        return None 
-
+        return None
 
 
 
@@ -105,10 +103,10 @@ def send_email(to,subject,content_body):
 
 
 @shared_task(ignore_result=False)
-def daily_remainder():
+def daily_reminder():
     timestamp = datetime.utcnow() - timedelta(hours=24)
     # Fetch users who haven't visited in the last 24 hours
-    not_visited_users = User.query.filter(User.last_activity < timestamp).all()
+    not_visited_users = User.query.filter(User.last_activity < datetime.utcnow()).all()
     
     if not not_visited_users:
         return "No inactive users today"
@@ -177,7 +175,7 @@ def monthly_reminder():
 
 
 def send_notification(username):
-    url = 'https://chat.googleapis.com/v1/spaces/AAAAs_Ud758/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=2-_o7I0Y-qamuAdRV4ExKj5PuixNDH4VMgJgCKAHTWc'
+    url = 'https://chat.googleapis.com/v1/spaces/AAAA76ytUGA/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=xYFAe_YD6XsrO2N4gFrAovGNNE-KwGC-HiViB5SpW4I'
     
     app_message = {
         'text': f'''Hello {username}! 

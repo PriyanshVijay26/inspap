@@ -6,6 +6,8 @@ import secrets
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_restful import Api
+from worker import celery_init_app
+from tasks import monthly_reminder, daily_reminder
 from flask_socketio import SocketIO
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -75,6 +77,19 @@ def create_app():
 
 # Create Flask app instance
 app= create_app()
+celery_app = celery_init_app(app)
+
+
+@celery_app.on_after_configure.connect
+def celery_job(sender, **kwargs):
+    # sender.add_periodic_task(crontab(hour=8, minute=0, day_of_month=1), monthly_reminder.s())
+    # sender.add_periodic_task(crontab(hour=18, minute=0), daily_reminder.s())
+
+    # for testing
+    sender.add_periodic_task(60, monthly_reminder.s())
+    sender.add_periodic_task(40, daily_reminder.s())
+
+
 
 # Run the Flask app
 if __name__ == '__main__':
