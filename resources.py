@@ -838,16 +838,6 @@ class ChatMessageResource(Resource):
         db.session.add(new_message)
         db.session.commit()
 
-        # Emit the new message to the room
-        '''room_name = f'proposal_{proposal_id}'
-        emit('new_message', {
-            'id': new_message.id,
-            'sender_id': new_message.sender_id,
-            'recipient_id': new_message.recipient_id,
-            'message': new_message.message,
-            'timestamp': new_message.timestamp.isoformat()
-        }, room=room_name, namespace='/') '''
-
         # Use make_response with jsonify:
         return make_response(jsonify({
             'id': new_message.id,
