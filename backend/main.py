@@ -71,14 +71,11 @@ def create_app():
         filename = filename.replace('uploads/images/', '')
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-    # --- THIS IS THE CORRECTED VUE SERVING ROUTE ---
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve_vue(path):
-        if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-            return send_from_directory(app.static_folder, path)
-        else:
-            return render_template("index.html")
+    # React frontend will be served by Vercel separately
+    # Only serve API endpoints from Flask backend
+    @app.route('/')
+    def api_info():
+        return {"message": "Influencer-Sponsor API Backend", "status": "running"}
 
     return app
 
