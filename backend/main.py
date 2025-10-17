@@ -267,4 +267,6 @@ def handle_send_message(data):
 # Run the Flask app with Socket.IO
 if __name__ == '__main__':
     initialize_sample_data()
-    socketio.run(app, debug=True, port=5000)
+    # Use PORT environment variable for Render deployment
+    port = int(os.getenv('PORT', 5000))
+    socketio.run(app, debug=False, host='0.0.0.0', port=port)
