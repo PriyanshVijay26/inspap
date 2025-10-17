@@ -1,0 +1,432 @@
+/* Dark Theme Variables and Styles */
+
+.dark-theme {
+  /* Color overrides for dark mode */
+  --gray-50: #1e293b;
+  --gray-100: #334155;
+  --gray-200: #475569;
+  --gray-300: #64748b;
+  --gray-400: #94a3b8;
+  --gray-500: #cbd5e1;
+  --gray-600: #e2e8f0;
+  --gray-700: #f1f5f9;
+  --gray-800: #f8fafc;
+  --gray-900: #ffffff;
+
+  --primary-color: #818cf8;
+  --primary-light: #a5b4fc;
+  --primary-dark: #6366f1;
+
+  --secondary-color: #38bdf8;
+  --secondary-light: #7dd3fc;
+  --secondary-dark: #0ea5e9;
+
+  --success-color: #34d399;
+  --danger-color: #f87171;
+  --warning-color: #fbbf24;
+  --accent-color: #fb923c;
+
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Body and App background */
+.dark-theme #app {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: var(--gray-900);
+}
+
+/* Cards and containers */
+.dark-theme .card,
+.dark-theme .admin-section,
+.dark-theme .campaign-info-card,
+.dark-theme .proposal-card,
+.dark-theme .forgot-password-card,
+.dark-theme .reset-password-card,
+.dark-theme .registration-card,
+.dark-theme .login-card,
+.dark-theme .form-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: var(--gray-900);
+}
+
+/* Navbar */
+.dark-theme .navbar {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-bottom-color: #334155;
+}
+
+.dark-theme .navbar-user-info {
+  background: linear-gradient(135deg, #334155, #1e293b);
+  border-color: #475569;
+}
+
+.dark-theme .navbar-dashboard-link {
+  background: #334155;
+  color: var(--gray-700);
+  border-color: #475569;
+}
+
+.dark-theme .navbar-dashboard-link:hover {
+  background: #475569;
+  color: var(--gray-900);
+}
+
+/* Footer */
+.dark-theme .app-footer {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  border-top-color: #1e293b;
+}
+
+/* Forms */
+.dark-theme .form-input,
+.dark-theme .form-select,
+.dark-theme .form-textarea,
+.dark-theme .search-input,
+.dark-theme .form-group input,
+.dark-theme .form-group textarea,
+.dark-theme .form-group select {
+  background: #334155;
+  border-color: #475569;
+  color: var(--gray-900);
+}
+
+.dark-theme .form-input:focus,
+.dark-theme .form-select:focus,
+.dark-theme .form-textarea:focus,
+.dark-theme .search-input:focus,
+.dark-theme .form-group input:focus,
+.dark-theme .form-group textarea:focus,
+.dark-theme .form-group select:focus {
+  border-color: var(--primary-color);
+  background: #1e293b;
+}
+
+.dark-theme .form-input::placeholder,
+.dark-theme .search-input::placeholder,
+.dark-theme .form-group input::placeholder,
+.dark-theme .form-group textarea::placeholder {
+  color: var(--gray-400);
+}
+
+/* Form labels and sections */
+.dark-theme .form-label,
+.dark-theme .form-group label {
+  color: var(--gray-600);
+}
+
+.dark-theme .form-section {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark-theme .form-section-title {
+  color: var(--gray-800);
+}
+
+/* Registration and Login specific */
+.dark-theme .registration-subtitle,
+.dark-theme .login-subtitle,
+.dark-theme .page-subtitle {
+  color: var(--gray-400);
+}
+
+.dark-theme .registration-title,
+.dark-theme .login-title,
+.dark-theme .page-title {
+  /* Gradient text will show properly with these base colors */
+  background: linear-gradient(135deg, var(--primary-light), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Form help text */
+.dark-theme .form-help {
+  color: var(--gray-400);
+}
+
+/* Form actions border */
+.dark-theme .form-actions {
+  border-top-color: #475569;
+}
+
+/* Tables */
+.dark-theme .admin-table {
+  background: #1e293b;
+}
+
+.dark-theme .admin-table thead {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-bottom-color: #475569;
+}
+
+.dark-theme .admin-table tbody tr {
+  border-bottom-color: #334155;
+}
+
+.dark-theme .admin-table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.05) 0%, rgba(165, 180, 252, 0.05) 100%);
+}
+
+/* Messages */
+.dark-theme .message-received .message-content {
+  background: #334155;
+  border-color: #475569;
+  color: var(--gray-900);
+}
+
+/* Empty states */
+.dark-theme .empty-state {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border-color: #475569;
+}
+
+/* Modals */
+.dark-theme .confirm-modal,
+.dark-theme .forgot-password-card,
+.dark-theme .reset-password-card {
+  background: #1e293b;
+  color: var(--gray-900);
+}
+
+.dark-theme .confirm-modal-header,
+.dark-theme .forgot-password-header,
+.dark-theme .reset-password-header {
+  border-bottom-color: #334155;
+}
+
+.dark-theme .confirm-modal-footer,
+.dark-theme .forgot-password-footer,
+.dark-theme .reset-password-footer {
+  background: #334155;
+  border-top-color: #475569;
+}
+
+/* Buttons */
+.dark-theme .btn-primary,
+.dark-theme .btn-secondary,
+.dark-theme .btn-danger,
+.dark-theme .btn-success,
+.dark-theme .submit-button {
+  color: white !important;
+}
+
+.dark-theme .btn-primary:hover,
+.dark-theme .btn-secondary:hover,
+.dark-theme .btn-danger:hover,
+.dark-theme .btn-success:hover,
+.dark-theme .submit-button:hover {
+  color: white !important;
+}
+
+/* Page backgrounds */
+.dark-theme .page-container,
+.dark-theme .admin-dashboard-page,
+.dark-theme .forgot-password-page,
+.dark-theme .reset-password-page,
+.dark-theme .registration-page,
+.dark-theme .login-page,
+.dark-theme .profile-page,
+.dark-theme .dashboard-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Dashboard specific */
+.dark-theme .brand-info,
+.dark-theme .influencer-info,
+.dark-theme .dashboard-section {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark-theme .dashboard-title,
+.dark-theme .brand-name,
+.dark-theme .influencer-name {
+  color: var(--gray-900);
+}
+
+.dark-theme .brand-info p,
+.dark-theme .influencer-info p {
+  color: var(--gray-400);
+}
+
+.dark-theme .create-campaign-button {
+  color: white !important;
+}
+
+/* Profile page specific */
+.dark-theme .profile-card,
+.dark-theme .profile-section {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark-theme .profile-name,
+.dark-theme .section-title,
+.dark-theme .campaign-title,
+.dark-theme .info-value {
+  color: var(--gray-900);
+}
+
+.dark-theme .profile-username,
+.dark-theme .section-content,
+.dark-theme .bio-text,
+.dark-theme .stat-label,
+.dark-theme .info-label {
+  color: var(--gray-400);
+}
+
+.dark-theme .profile-stats,
+.dark-theme .campaign-mini-card,
+.dark-theme .proposal-mini-card {
+  border-color: #475569;
+}
+
+.dark-theme .back-button {
+  background: #334155;
+  border-color: #475569;
+  color: var(--gray-600);
+}
+
+.dark-theme .back-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-light);
+}
+
+.dark-theme .empty-state-small {
+  color: var(--gray-400);
+}
+
+.dark-theme .empty-state-small i {
+  color: var(--gray-500);
+}
+
+.dark-theme .profile-error {
+  color: var(--gray-400);
+}
+
+.dark-theme .profile-error h2 {
+  color: var(--gray-800);
+}
+
+/* Specific component overrides */
+.dark-theme .chat-messages {
+  background: #1e293b;
+}
+
+.dark-theme .chat-header,
+.dark-theme .chat-input-form {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark-theme .campaign-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark-theme .campaign-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 16px rgba(129, 140, 248, 0.2);
+}
+
+/* Scrollbars */
+.dark-theme ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Selection */
+.dark-theme ::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: var(--gray-900);
+}
+
+/* Links */
+.dark-theme a:not(.btn):not(.btn-outline):not(.btn-primary):not(.btn-secondary) {
+  color: var(--primary-light);
+}
+
+.dark-theme a:not(.btn):not(.btn-outline):not(.btn-primary):not(.btn-secondary):hover {
+  color: var(--primary-color);
+}
+
+/* Button overrides - MUST come after general link styles */
+.dark-theme .btn-outline,
+.dark-theme a.btn-outline,
+.dark-theme .btn.btn-outline,
+.dark-theme .homepage .btn-outline,
+.dark-theme .actions .btn-outline {
+  background: #334155 !important;
+  border-color: var(--primary-color) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-theme .btn-outline *,
+.dark-theme a.btn-outline *,
+.dark-theme .btn.btn-outline *,
+.dark-theme .homepage .btn-outline *,
+.dark-theme .actions .btn-outline * {
+  color: #ffffff !important;
+}
+
+.dark-theme .btn-outline:hover,
+.dark-theme a.btn-outline:hover,
+.dark-theme .btn.btn-outline:hover,
+.dark-theme .homepage .btn-outline:hover,
+.dark-theme .actions .btn-outline:hover {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3) !important;
+}
+
+/* Transitions */
+.dark-theme,
+.dark-theme * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* CRITICAL OVERRIDE - Must be last rule for homepage buttons */
+.dark-theme .homepage .actions .btn-outline {
+  background: #334155 !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+.dark-theme .homepage .actions .btn-outline:hover {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Navbar Login Button Fix */
+.dark-theme .navbar-login-link {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+  color: #ffffff !important;
+}
+
+.dark-theme .navbar-login-link i {
+  color: #ffffff !important;
+}
+
+.dark-theme .navbar-login-link:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color)) !important;
+  color: #ffffff !important;
+}
+

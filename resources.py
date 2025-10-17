@@ -3,7 +3,7 @@ from models import db, User, Influencer, Brand
 from flask_security.utils import hash_password,verify_password
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 from datastorefile import datastore
 from flask import jsonify, request, make_response,Response,stream_with_context,json,send_file
 from flask_security import auth_required, roles_required, current_user
@@ -13,6 +13,7 @@ from flask_login import LoginManager,login_required,current_user,UserMixin,login
 from flask_socketio import emit
 #from main import api, socketio  # Import api from main.py
 import time
+import secrets
 #from flask_socketio import emit, join_room, leave_room
 from tasks import *
 from celery.result import AsyncResult
@@ -284,7 +285,7 @@ class AdminLogin(Resource):
 
 
 class CreateCampaign(Resource):
-    #@auth_required('token')
+    @auth_required('token')
     def get(self):
         # Get the Brand associated with the current user
         brand = Brand.query.filter_by(user_id=current_user.id).first()
@@ -314,8 +315,8 @@ class CreateCampaign(Resource):
             campaign_list.append(campaign_data)
 
         return make_response(jsonify({'campaigns': campaign_list}), 200)
-    #@auth_required('token')
-    #@roles_required('brand')
+    @auth_required('token')
+    @roles_required('brand')
     def post(self):
         """
         Create a new campaign.
@@ -796,7 +797,7 @@ chat_message_fields = {
 }
 
 class ChatMessageResource(Resource):
-    #@auth_required('token')
+    @auth_required('token')
     def post(self, campaign_id, proposal_id):
         """
         Send a new chat message for a proposal (with Socket.IO).
@@ -853,80 +854,62 @@ class ChatMessageResource(Resource):
     @auth_required('token')
     def get(self, campaign_id, proposal_id):
         """
-        Stream chat messages for a proposal via SSE.
+        Fetch all chat messages for a proposal (for WebSocket chat).
         """
-        print(f"SSE GET request received for campaign_id: {campaign_id}, proposal_id: {proposal_id}")
-        auth_token = request.args.get('auth_token')
-        user = current_user
-        print(auth_token==user.get_token_from_storage())
-        print(auth_token)
-        print(user.get_token_from_storage())
-        if auth_token != user.get_token_from_storage():
-            return make_response(jsonify({'message': 'Unauthorized'}), 403)
-
-
+        print(f"📨 GET request for chat messages - Campaign: {campaign_id}, Proposal: {proposal_id}")
+        
         try:
             user = current_user
-            print(f"User: {user}")
+            print(f"User: {user.email}")
 
+            # Get the proposal
             proposal = Proposal.query.filter_by(id=proposal_id, campaign_id=campaign_id).first()
             if not proposal:
-                print(f"Proposal not found for campaign_id: {campaign_id}, proposal_id: {proposal_id}")
+                print(f"❌ Proposal not found")
                 return make_response(jsonify({'message': 'Proposal not found'}), 404)
-            print("Proposal found")
 
+            # Check authorization
             influencer = Influencer.query.filter_by(user_id=user.id).first()
             brand = Brand.query.filter_by(user_id=user.id).first()
-            print(f"Influencer: {influencer}, Brand: {brand}")
 
             if not influencer and not brand:
-                print("User not found (neither influencer nor brand)")
+                print("❌ User not found (neither influencer nor brand)")
                 return make_response(jsonify({'message': 'User not found'}), 404)
-            print("User found")
 
+            # Verify user has access to this proposal's chat
             if (influencer and proposal.influencer_id != influencer.id) and \
-            (brand and proposal.campaign.brand_id != brand.id):
-                print("Unauthorized access to proposal")
+               (brand and proposal.campaign.brand_id != brand.id):
+                print("❌ Unauthorized access to proposal")
                 return make_response(jsonify({'message': 'Unauthorized'}), 403)
-            print("Authorized access")
 
-            # Stream messages
-            last_message_id = None
+            # Fetch all messages for this proposal
+            messages = ChatMessage.query.filter_by(proposal_id=proposal_id).order_by(ChatMessage.timestamp).all()
+            
+            print(f"✅ Found {len(messages)} messages")
+            
+            # Format messages for response
+            messages_data = [
+                {
+                    'id': msg.id,
+                    'sender_id': msg.sender_id,
+                    'recipient_id': msg.recipient_id,
+                    'message': msg.message,
+                    'timestamp': msg.timestamp.isoformat(),
+                    'read': msg.read if hasattr(msg, 'read') else False,
+                    'file_url': msg.file_url if hasattr(msg, 'file_url') else None,
+                    'file_name': msg.file_name if hasattr(msg, 'file_name') else None,
+                    'file_type': msg.file_type if hasattr(msg, 'file_type') else None,
+                    'file_size': msg.file_size if hasattr(msg, 'file_size') else None
+                }
+                for msg in messages
+            ]
 
-            # Stream messages
-            def message_stream():
-                nonlocal last_message_id  # Access the outer variable
-
-                while True:  # Keep streaming
-                    # Fetch new messages since the last sent message
-                    query = ChatMessage.query.filter(ChatMessage.proposal_id == proposal_id)
-
-                    if last_message_id:
-                        query = query.filter(ChatMessage.id > last_message_id)
-
-                    new_messages = query.order_by(ChatMessage.timestamp).all()
-                    if len(new_messages) > 0:
-                        print(f"Streaming {len(new_messages)} new messages")
-
-                        for message in new_messages:
-                            data = {
-                                'id': message.id,
-                                'sender_id': message.sender_id,
-                                'content': message.message,
-                                'timestamp': message.timestamp.isoformat(),
-                            }
-                            yield f"data: {json.dumps(data)}\n\n"
-
-                            # Update last_message_id to the ID of the last sent message
-                            last_message_id = message.id
-                    else:
-                        print("No new messages to stream")
-
-                    time.sleep(1)  # Adjust polling frequency as needed
-
-            return Response(stream_with_context(message_stream()), content_type='text/event-stream')
+            return make_response(jsonify({'messages': messages_data}), 200)
+            
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"❌ Error fetching messages: {e}")
+            import traceback
+            traceback.print_exc()
             return make_response(jsonify({'message': 'Internal Server Error'}), 500)
         
 
@@ -1280,6 +1263,182 @@ api.add_resource(CampaignResource, '/api/campaigns/<int:campaign_id>')
 
 api.add_resource(CreateCampaign, '/api/campaigns')
 
+# Password Reset Resources
+class ForgotPasswordResource(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            email = data.get('email')
+            
+            if not email:
+                return {'message': 'Email is required'}, 400
+            
+            user = User.query.filter_by(email=email).first()
+            
+            # Always return success to prevent email enumeration
+            if not user:
+                return {'message': 'If this email exists, a reset link will be sent'}, 200
+            
+            # Generate reset token
+            reset_token = secrets.token_urlsafe(32)
+            reset_expires = datetime.utcnow() + timedelta(hours=1)
+            
+            # Store token (you might want to add reset_token and reset_expires columns to User model)
+            # For now, we'll store in fs_uniquifier temporarily (NOT PRODUCTION READY)
+            user.fs_uniquifier = f"reset_{reset_token}_{reset_expires.timestamp()}"
+            db.session.commit()
+            
+            # TODO: Send email with reset link
+            # For now, we'll just print the link (development only)
+            reset_link = f"http://localhost:3000/reset-password?token={reset_token}"
+            print(f"Password reset link for {email}: {reset_link}")
+            
+            return {'message': 'Password reset link sent to your email'}, 200
+            
+        except Exception as e:
+            print(f"Error in forgot password: {str(e)}")
+            return {'message': 'An error occurred'}, 500
+
+
+class VerifyResetTokenResource(Resource):
+    def get(self):
+        try:
+            token = request.args.get('token')
+            
+            if not token:
+                return {'message': 'Token is required'}, 400
+            
+            # Find user with this token
+            users = User.query.all()
+            for user in users:
+                if user.fs_uniquifier and user.fs_uniquifier.startswith(f'reset_{token}_'):
+                    # Extract expiration from fs_uniquifier
+                    try:
+                        expires_timestamp = float(user.fs_uniquifier.split('_')[2])
+                        expires_datetime = datetime.fromtimestamp(expires_timestamp)
+                        
+                        if datetime.utcnow() > expires_datetime:
+                            return {'message': 'Token has expired'}, 400
+                        
+                        return {'message': 'Token is valid'}, 200
+                    except:
+                        return {'message': 'Invalid token'}, 400
+            
+            return {'message': 'Invalid token'}, 400
+            
+        except Exception as e:
+            print(f"Error verifying token: {str(e)}")
+            return {'message': 'An error occurred'}, 500
+
+
+class ResetPasswordResource(Resource):
+    def post(self):
+        try:
+            data = request.get_json()
+            token = data.get('token')
+            new_password = data.get('password')
+            
+            if not token or not new_password:
+                return {'message': 'Token and password are required'}, 400
+            
+            # Find user with this token
+            users = User.query.all()
+            for user in users:
+                if user.fs_uniquifier and user.fs_uniquifier.startswith(f'reset_{token}_'):
+                    # Extract expiration
+                    try:
+                        expires_timestamp = float(user.fs_uniquifier.split('_')[2])
+                        expires_datetime = datetime.fromtimestamp(expires_timestamp)
+                        
+                        if datetime.utcnow() > expires_datetime:
+                            return {'message': 'Token has expired'}, 400
+                        
+                        # Reset password
+                        user.password = hash_password(new_password)
+                        # Clear the reset token
+                        user.fs_uniquifier = secrets.token_urlsafe(16)
+                        db.session.commit()
+                        
+                        return {'message': 'Password reset successful'}, 200
+                    except Exception as e:
+                        print(f"Error parsing token: {str(e)}")
+                        return {'message': 'Invalid token'}, 400
+            
+            return {'message': 'Invalid token'}, 400
+            
+        except Exception as e:
+            print(f"Error resetting password: {str(e)}")
+            return {'message': 'An error occurred'}, 500
+
+
+class ChatFileUploadResource(Resource):
+    def post(self):
+        """Handle file uploads for chat"""
+        try:
+            if 'file' not in request.files:
+                return {'message': 'No file provided'}, 400
+            
+            file = request.files['file']
+            if file.filename == '':
+                return {'message': 'No file selected'}, 400
+            
+            # Extended allowed file types for chat
+            CHAT_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'doc', 'docx', 'txt', 'zip'}
+            
+            def allowed_chat_file(filename):
+                return '.' in filename and filename.rsplit('.', 1)[1].lower() in CHAT_ALLOWED_EXTENSIONS
+            
+            if not allowed_chat_file(file.filename):
+                return {'message': 'File type not allowed'}, 400
+            
+            # Check file size (max 10MB)
+            file.seek(0, os.SEEK_END)
+            file_size = file.tell()
+            file.seek(0)  # Reset file pointer
+            
+            if file_size > 10 * 1024 * 1024:  # 10MB
+                return {'message': 'File too large. Maximum size is 10MB'}, 400
+            
+            # Generate unique filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            original_name = secure_filename(file.filename)
+            file_extension = original_name.rsplit('.', 1)[1].lower()
+            unique_filename = f"chat_{timestamp}_{secrets.token_hex(8)}.{file_extension}"
+            
+            # Create chat uploads directory if it doesn't exist
+            from main import app
+            chat_upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'chat')
+            if not os.path.exists(chat_upload_dir):
+                os.makedirs(chat_upload_dir)
+            
+            # Save file
+            filepath = os.path.join(chat_upload_dir, unique_filename)
+            file.save(filepath)
+            
+            # Determine file type
+            file_type = 'document'
+            if file_extension in ['png', 'jpg', 'jpeg', 'gif']:
+                file_type = 'image'
+            elif file_extension == 'pdf':
+                file_type = 'pdf'
+            
+            # Return file info
+            file_url = f"/uploads/chat/{unique_filename}"
+            
+            return {
+                'file_url': file_url,
+                'file_name': original_name,
+                'file_type': file_type,
+                'file_size': file_size
+            }, 200
+            
+        except Exception as e:
+            print(f"Error uploading file: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return {'message': f'File upload failed: {str(e)}'}, 500
+
+
 api.add_resource(InfluencerCampaignResource, '/influencer-campaigns') 
 api.add_resource(InfluencerLogin, '/api/login/influencer')
 api.add_resource(BrandLogin, '/api/login/brand')
@@ -1288,3 +1447,7 @@ api.add_resource(UserDetails, '/api/user')
 api.add_resource(InfluencerRegistration, '/api/register/influencer',methods=['GET', 'POST', 'OPTIONS', 'HEAD'])
 api.add_resource(BrandRegistration, '/api/register/brand',methods=['GET', 'POST', 'OPTIONS', 'HEAD'])
 api.add_resource(ProposalsResource, '/api/proposals')
+api.add_resource(ForgotPasswordResource, '/api/auth/forgot-password')
+api.add_resource(VerifyResetTokenResource, '/api/auth/verify-reset-token')
+api.add_resource(ResetPasswordResource, '/api/auth/reset-password')
+api.add_resource(ChatFileUploadResource, '/api/chat/upload')

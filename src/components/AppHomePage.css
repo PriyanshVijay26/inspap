@@ -1,0 +1,102 @@
+.homepage {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.homepage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+  z-index: -1;
+}
+
+.hero-image {
+  margin-bottom: var(--spacing-8);
+  position: relative;
+}
+
+.hero-image img {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  transition: transform 0.3s ease;
+}
+
+.hero-image img:hover {
+  transform: scale(1.02);
+}
+
+.hero {
+  margin-bottom: var(--spacing-12);
+  max-width: 800px;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  margin-bottom: var(--spacing-6);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: var(--font-size-xl);
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-8);
+  line-height: 1.6;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+  max-width: 800px;
+  width: 100%;
+}
+
+.actions .btn {
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .actions {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+  
+  .hero-image img {
+    max-width: 350px;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero p {
+    font-size: var(--font-size-lg);
+  }
+}

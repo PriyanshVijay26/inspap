@@ -2,8 +2,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_security import UserMixin,RoleMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import pytz
 
 db=SQLAlchemy()
+
+def get_ist_time():
+    """Returns current time in IST timezone"""
+    ist = pytz.timezone('Asia/Kolkata')
+    return datetime.now(ist)
 
 roles_users = db.Table(
     'roles_users',
@@ -135,8 +141,13 @@ class ChatMessage(db.Model):
  backref='received_messages')
     proposal_id = db.Column(db.Integer, db.ForeignKey('proposal.id'), nullable=False)
     #proposal = db.relationship('Proposal', backref='chat_messages')
-    message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=db.func.now())
+    message = db.Column(db.Text, nullable=True)  # Made nullable for file-only messages
+    timestamp = db.Column(db.DateTime, default=get_ist_time)
+    read = db.Column(db.Boolean, default=False)  # Read receipt tracking
+    file_url = db.Column(db.String(500), nullable=True)  # File attachment URL
+    file_name = db.Column(db.String(255), nullable=True)  # Original file name
+    file_type = db.Column(db.String(50), nullable=True)  # File type (image, document, etc.)
+    file_size = db.Column(db.Integer, nullable=True)  # File size in bytes
 
     def __repr__(self):
         return f'<ChatMessage {self.id}>'
