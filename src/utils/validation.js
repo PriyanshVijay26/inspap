@@ -68,7 +68,7 @@ export const validators = {
   // Phone number validation
   phone: (value) => {
     if (!value) return null; // Optional field
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const phoneRegex = /^[\d\s\-+()]+$/;
     if (!phoneRegex.test(value)) return 'Please enter a valid phone number';
     if (value.replace(/\D/g, '').length < 10) return 'Phone number must be at least 10 digits';
     return null;

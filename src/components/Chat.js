@@ -124,8 +124,6 @@ const Chat = () => {
 
   const fetchChatData = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      
       // Get current user info
       const userResponse = await authenticatedFetch('/user');
       if (userResponse.ok) {
