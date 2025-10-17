@@ -1,0 +1,3 @@
+# Placeholder requirements.txt for Render
+# Real dependencies are installed via build command from backend/requirements.txt
+flask==3.0.0

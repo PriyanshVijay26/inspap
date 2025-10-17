@@ -1,9 +1,2 @@
-services:
-  - type: web
-    name: influencer-backend
-    runtime: python3
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && python main.py
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
+# Using Railway instead - it handles monorepo structures better
+# Deploy backend to: https://railway.app
