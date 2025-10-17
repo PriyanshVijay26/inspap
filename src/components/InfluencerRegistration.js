@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './InfluencerRegistration.css';
 
 const InfluencerRegistration = () => {
@@ -39,8 +39,12 @@ const InfluencerRegistration = () => {
 
   const fetchNiches = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/niches');
-      setNiches(response.data);
+      const response = await fetch(`${API_BASE_URL}/niches`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch niches');
+      }
+      const data = await response.json();
+      setNiches(data);
     } catch (error) {
       console.error('Error fetching niches:', error);
     }
@@ -72,13 +76,23 @@ const InfluencerRegistration = () => {
         formDataToSend.append('profile_image', profileImage);
       }
 
-      const response = await axios.post('http://localhost:5000/api/register/influencer', formDataToSend);
-      console.log(response.data.message);
+      const response = await fetch(`${API_BASE_URL}/register/influencer`, {
+        method: 'POST',
+        body: formDataToSend
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed.');
+      }
+
+      const data = await response.json();
+      console.log(data.message);
 
       // Redirect to the login page or home page
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred during registration.');
+      setError(error.message || 'An error occurred during registration.');
     }
   };
 

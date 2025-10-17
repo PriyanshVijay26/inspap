@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './BrandRegistration.css';
 
 const BrandRegistration = () => {
@@ -22,8 +22,12 @@ const BrandRegistration = () => {
   useEffect(() => {
     const fetchNiches = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/niches');
-        setNiches(response.data);
+        const response = await fetch(`${API_BASE_URL}/niches`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch niches');
+        }
+        const data = await response.json();
+        setNiches(data);
       } catch (error) {
         console.error('Error fetching niches:', error);
       }
@@ -57,7 +61,7 @@ const BrandRegistration = () => {
         formDataToSend.append('profile_image', profileImage);
       }
 
-      const response = await fetch('http://localhost:5000/api/register/brand', {
+      const response = await fetch(`${API_BASE_URL}/register/brand`, {
         method: 'POST',
         body: formDataToSend
       });

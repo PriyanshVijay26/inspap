@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContainer';
 import LoadingSpinner from './LoadingSpinner';
 import ConfirmModal from './ConfirmModal';
+import { authenticatedFetch } from '../utils/api';
 import './CampaignProposals.css';
 
 const CampaignProposals = () => {
@@ -25,12 +26,7 @@ const CampaignProposals = () => {
 
   const fetchCampaignDetails = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}`, {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch(`/campaigns/${campaignId}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -45,12 +41,7 @@ const CampaignProposals = () => {
 
   const fetchProposals = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}/proposals`, {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch(`/campaigns/${campaignId}/proposals`);
 
       if (response.ok) {
         const data = await response.json();
@@ -66,12 +57,10 @@ const CampaignProposals = () => {
 
   const acceptProposal = async (proposalId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}/proposals/${proposalId}`, {
+      const response = await authenticatedFetch(`/campaigns/${campaignId}/proposals/${proposalId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           action: 'accept'
@@ -92,12 +81,10 @@ const CampaignProposals = () => {
 
   const rejectProposal = async (proposalId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}/proposals/${proposalId}`, {
+      const response = await authenticatedFetch(`/campaigns/${campaignId}/proposals/${proposalId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           action: 'reject'
@@ -118,12 +105,10 @@ const CampaignProposals = () => {
 
   const negotiateProposal = async (proposalId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}/proposals/${proposalId}`, {
+      const response = await authenticatedFetch(`/campaigns/${campaignId}/proposals/${proposalId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           action: 'negotiate'

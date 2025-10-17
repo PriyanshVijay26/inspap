@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authenticatedFetch } from '../utils/api';
 import './CreateCampaign.css';
 
 const CreateCampaign = () => {
@@ -30,12 +31,10 @@ const CreateCampaign = () => {
     setErrorMessage('');
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/campaigns', {
+      const response = await authenticatedFetch('/campaigns', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(campaignData)
       });

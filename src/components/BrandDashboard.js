@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { authenticatedFetch, API_BASE_URL } from '../utils/api';
 import './BrandDashboard.css';
 
 const BrandDashboard = () => {
@@ -7,7 +8,6 @@ const BrandDashboard = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
-  const baseURL = 'http://localhost:5000';
 
   useEffect(() => {
     fetchUserData();
@@ -16,12 +16,7 @@ const BrandDashboard = () => {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${baseURL}/api/user`, {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/user');
       
       if (response.ok) {
         const data = await response.json();
@@ -37,12 +32,7 @@ const BrandDashboard = () => {
 
   const fetchCampaigns = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`${baseURL}/api/campaigns`, {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/campaigns');
       
       if (response.ok) {
         const data = await response.json();

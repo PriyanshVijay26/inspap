@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContainer';
 import LoadingSpinner from './LoadingSpinner';
+import { authenticatedFetch } from '../utils/api';
 import './Profile.css';
 
 const BrandProfile = () => {
@@ -24,21 +25,15 @@ const BrandProfile = () => {
 
   const fetchBrandProfile = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      
       // Fetch brand details
-      const brandResponse = await fetch(`http://localhost:5000/api/brands/${brandId}`, {
-        headers: { 'Authentication-Token': token }
-      });
+      const brandResponse = await authenticatedFetch(`/brands/${brandId}`);
 
       if (brandResponse.ok) {
         const brandData = await brandResponse.json();
         setBrand(brandData);
-        
+
         // Fetch brand's campaigns
-        const campaignsResponse = await fetch(`http://localhost:5000/api/brands/${brandId}/campaigns`, {
-          headers: { 'Authentication-Token': token }
-        });
+        const campaignsResponse = await authenticatedFetch(`/brands/${brandId}/campaigns`);
 
         if (campaignsResponse.ok) {
           const campaignsData = await campaignsResponse.json();

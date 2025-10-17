@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from './ToastContainer';
 import LoadingSpinner from './LoadingSpinner';
+import { authenticatedFetch } from '../utils/api';
 import './Profile.css';
 
 const InfluencerProfile = () => {
@@ -18,22 +19,16 @@ const InfluencerProfile = () => {
 
   const fetchInfluencerProfile = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      
       // Fetch influencer details
-      const response = await fetch(`http://localhost:5000/api/influencers/${influencerId}`, {
-        headers: { 'Authentication-Token': token }
-      });
+      const response = await authenticatedFetch(`/influencers/${influencerId}`);
 
       if (response.ok) {
         const data = await response.json();
         setInfluencer(data);
-        
+
         // Fetch proposals (if available)
         try {
-          const proposalsResponse = await fetch(`http://localhost:5000/api/influencers/${influencerId}/proposals`, {
-            headers: { 'Authentication-Token': token }
-          });
+          const proposalsResponse = await authenticatedFetch(`/influencers/${influencerId}/proposals`);
           if (proposalsResponse.ok) {
             const proposalsData = await proposalsResponse.json();
             setProposals(proposalsData.proposals || []);

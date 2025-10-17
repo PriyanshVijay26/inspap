@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from './ToastContainer';
 import LoadingSpinner from './LoadingSpinner';
 import { validators } from '../utils/validation';
+import { API_BASE_URL } from '../utils/api';
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -29,7 +30,7 @@ const ForgotPassword = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

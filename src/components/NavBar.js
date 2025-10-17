@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import { authenticatedFetch } from '../utils/api';
 import './NavBar.css';
 
 const NavBar = () => {
@@ -22,10 +23,7 @@ const NavBar = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/user', {
-        headers: { 'Authentication-Token': token }
-      });
+      const response = await authenticatedFetch('/user');
       if (response.ok) {
         const userData = await response.json();
         setUserName(userData.username || userData.name || 'User');

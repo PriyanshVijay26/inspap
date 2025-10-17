@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authenticatedFetch, API_BASE_URL } from '../utils/api';
 import './InfluencerDashboard.css';
 
 const InfluencerDashboard = () => {
@@ -21,12 +22,7 @@ const InfluencerDashboard = () => {
 
   const fetchInfluencerData = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/user', {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/user');
       
       if (response.ok) {
         const data = await response.json();
@@ -42,12 +38,7 @@ const InfluencerDashboard = () => {
 
   const fetchCampaigns = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/influencer-campaigns', {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/influencer-campaigns');
       
       if (response.ok) {
         const data = await response.json();
@@ -63,12 +54,7 @@ const InfluencerDashboard = () => {
 
   const fetchProposals = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/proposals', {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/proposals');
       
       if (response.ok) {
         const data = await response.json();
@@ -97,12 +83,10 @@ const InfluencerDashboard = () => {
   const createAdRequest = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${selectedCampaign.id}/proposals`, {
+      const response = await authenticatedFetch(`/campaigns/${selectedCampaign.id}/proposals`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           proposal_details: proposalDetails || `I would like to collaborate on your campaign "${selectedCampaign.title}" for $${bidAmount}.`,
@@ -123,8 +107,8 @@ const InfluencerDashboard = () => {
     }
   };
 
-  const profileImageURL = influencer?.profile_image 
-    ? `http://localhost:5000/${influencer.profile_image}` 
+  const profileImageURL = influencer?.profile_image
+    ? `${API_BASE_URL}/${influencer.profile_image}`
     : null;
 
   return (

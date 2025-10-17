@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { authenticatedFetch } from '../utils/api';
 import './UpdateCampaign.css';
 
 const UpdateCampaign = () => {
@@ -22,12 +23,7 @@ const UpdateCampaign = () => {
 
   const fetchCampaignData = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}`, {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch(`/campaigns/${campaignId}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -53,12 +49,10 @@ const UpdateCampaign = () => {
     setErrorMessage('');
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/campaigns/${campaignId}`, {
+      const response = await authenticatedFetch(`/campaigns/${campaignId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(campaignData)
       });

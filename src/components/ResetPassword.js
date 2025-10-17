@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useToast } from './ToastContainer';
 import LoadingSpinner from './LoadingSpinner';
 import { validators, getPasswordStrength } from '../utils/validation';
+import { API_BASE_URL } from '../utils/api';
 import './ResetPassword.css';
 
 const ResetPassword = () => {
@@ -34,7 +35,7 @@ const ResetPassword = () => {
 
   const verifyToken = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/verify-reset-token?token=${token}`);
+      const response = await fetch(`${API_BASE_URL}/auth/verify-reset-token?token=${token}`);
       if (response.ok) {
         setTokenValid(true);
       } else {
@@ -77,7 +78,7 @@ const ResetPassword = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

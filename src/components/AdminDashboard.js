@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authenticatedFetch } from '../utils/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -15,12 +16,7 @@ const AdminDashboard = () => {
 
   const fetchBrandProfessionals = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/admin/brand_professionals', {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/admin/brand_professionals');
       
       if (response.ok) {
         const data = await response.json();
@@ -37,12 +33,7 @@ const AdminDashboard = () => {
 
   const fetchInfluencers = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/admin/influencer_professionals', {
-        headers: {
-          'Authentication-Token': token
-        }
-      });
+      const response = await authenticatedFetch('/admin/influencer_professionals');
       
       if (response.ok) {
         const data = await response.json();
@@ -59,12 +50,8 @@ const AdminDashboard = () => {
 
   const verifyBrand = async (brandId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/admin/verify_brand/${brandId}`, {
-        method: 'POST',
-        headers: {
-          'Authentication-Token': token
-        }
+      const response = await authenticatedFetch(`/admin/verify_brand/${brandId}`, {
+        method: 'POST'
       });
       
       if (response.ok) {
@@ -83,12 +70,8 @@ const AdminDashboard = () => {
 
   const activateUser = async (userId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/admin/activate_user/${userId}`, {
-        method: 'POST',
-        headers: {
-          'Authentication-Token': token
-        }
+      const response = await authenticatedFetch(`/admin/activate_user/${userId}`, {
+        method: 'POST'
       });
       
       if (response.ok) {
@@ -108,12 +91,8 @@ const AdminDashboard = () => {
 
   const deactivateUser = async (userId) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:5000/api/admin/deactivate_user/${userId}`, {
-        method: 'POST',
-        headers: {
-          'Authentication-Token': token
-        }
+      const response = await authenticatedFetch(`/admin/deactivate_user/${userId}`, {
+        method: 'POST'
       });
       
       if (response.ok) {

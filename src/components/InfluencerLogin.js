@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { API_BASE_URL } from '../utils/api';
 import './InfluencerLogin.css';
 
 const InfluencerLogin = () => {
@@ -14,13 +14,26 @@ const InfluencerLogin = () => {
     setError(null);
     
     try {
-      const response = await axios.post('http://localhost:5000/api/login/influencer', {
-        email: email,
-        password: password
+      const response = await fetch(`${API_BASE_URL}/login/influencer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed.');
+      }
+
+      const data = await response.json();
+
       // Store the authentication token and role
-      localStorage.setItem('auth_token', response.data.auth_token);
+      localStorage.setItem('auth_token', data.auth_token);
       localStorage.setItem('role', 'influencer');
 
       // Redirect to the influencer dashboard

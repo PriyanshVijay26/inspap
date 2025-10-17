@@ -52,7 +52,8 @@ def create_app():
                 "http://localhost:3000",  # React development server
                 "http://localhost:8080",  # Vue development server (legacy)
                 "http://127.0.0.1:3000",  # Alternative React URL
-                "http://127.0.0.1:8080"   # Alternative Vue URL
+                "http://127.0.0.1:8080",   # Alternative Vue URL
+                "https://inspap.vercel.app"  # Vercel deployed frontend
             ],
             "supports_credentials": True,
             "allow_headers": ["Content-Type", "Authorization", "Authentication-Token"],
