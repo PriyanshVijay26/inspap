@@ -115,7 +115,7 @@ python-engineio==4.10.1
 python-socketio==5.11.4
 pytz==2023.3.post1
 pyuploadcare==6.0.0
-PyYAML==5.4.1
+PyYAML==6.0.1  # Updated from 5.4.1 for Python 3.13 compatibility
 redis==5.0.1
 requests==2.32.3
 requests-oauthlib==2.0.0
