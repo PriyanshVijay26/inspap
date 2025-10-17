@@ -56,7 +56,7 @@ google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.1
 google-generativeai==0.8.3
 googleapis-common-protos==1.66.0
-greenlet==3.0.1
+greenlet==3.0.3  # Compatible with Python 3.11
 grpcio==1.68.1
 grpcio-status==1.68.1
 gunicorn==23.0.0
@@ -109,7 +109,7 @@ pyparsing==3.1.1
 PyPDF2==3.0.1
 pyphen==0.14.0
 # python-apt==2.4.0+ubuntu2  # Removed - Ubuntu-specific system package
-python-dateutil==2.8.2
+python-dateutil==2.9.0  # Updated for better compatibility
 python-dotenv==1.0.1
 python-engineio==4.10.1
 python-socketio==5.11.4
